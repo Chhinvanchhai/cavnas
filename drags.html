@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style type="text/css">
+    body {
+      background-color: ivory;
+    }
+
+    #canvas {
+      border: 1px solid red;
+    }
+  </style>
+</head>
+
+<body>
+  <h4>Drag the text</h4>
+
+  <div style="">
+    <canvas  id="canvas" width="800" height="800"></canvas>
+
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+  <script type="text/javascript">
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+
+    // variables used to get mouse position on the canvas
+    var $canvas = $("#canvas");
+    var canvasOffset = $canvas.offset();
+    var offsetX = canvasOffset.left;
+    var offsetY = canvasOffset.top;
+    var scrollX = $canvas.scrollLeft();
+    var scrollY = $canvas.scrollTop();
+    var lineColor = "#ddd";
+    var canvasSize = 600;
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+    var setting = {
+      positions: [{
+        id: 1,
+        value: '',
+        x: '',
+        y: '',
+      }]
+    }
+    for (var i = 1; i <= 63; i++) {
+      setting.positions.push({
+        id: i,
+        value: '',
+        x: '',
+        y: '',
+        h: '',
+        w: '',	
+      })
+    }
+    var startX;
+    var startY;
+    var texts = [];
+    var datas = [];
+
+    datas.push({
+      w: 20,
+      h: 20,
+      x: 120,
+      y: 30
+    });
+
+    datas.push({
+      w: 40,
+      h: 40,
+      x: 40,
+      y: 23
+    });
+    datas.push({
+      w: 40,
+      h: 40,
+      x: 220,
+      y: 120
+    });
+    ctx.font = "16px verdana";
+
+    
+    for (var i = 0; i < datas.length; i++) {
+      var box = datas[i];
+      ctx.fillRect(box.x, box.y, box.w, box.h);
+
+    }
+
+    // this var will hold the index of the selected text
+    var selectedText = -1;
+    var selectBox = -1
+
+    // START: draw all texts to the canvas
+    draw();
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawLines(2, lineColor);
+      for (var i = 0; i < datas.length; i++) {
+        var box = datas[i];
+        ctx.fillRect(box.x, box.y, box.w, box.h);
+      }
+    }
+
+    function drawLines(lineWidth, strokeStyle) {
+      var lineStart = 4;
+      var lineLenght = canvasSize - 5;
+      ctx.lineWidth = lineWidth;
+      // ctx.lineCap = 'round';
+      ctx.strokeStyle = strokeStyle;
+      ctx.beginPath();
+      for (var y = 0; y <= 8; y++) {
+        ctx.moveTo(lineStart + y, y * (canvas.width / 8));
+        ctx.lineTo(lineLenght + y, y * (canvas.width / 8));
+      }
+      for (var x = 0; x <= 8; x++) {
+        ctx.moveTo(x * (canvas.height / 8), lineStart);
+        ctx.lineTo(x * (canvas.height / 8), lineLenght);
+      }
+      ctx.stroke();
+    }
+
+    function dataHittest(x, y, textIndex) {
+      var d = datas[textIndex];
+
+      y = y - d.h
+      console.log("x, y, d", x, y, d);
+
+      return (x >= d.x && x <= d.x + d.w && y >= d.y - d.h && y <= d.y);
+    }
+
+    function handleMouseDown(e) {
+      e.preventDefault();
+      console.log("offsetX=offsetY", offsetX, offsetY);
+      startX = parseInt(e.clientX - offsetX);
+      startY = parseInt(e.clientY - (offsetY));
+      for (var j = 0; j < datas.length; j++) {
+        if (dataHittest(startX, startY, j)) {
+          selectBox = j;
+        }
+      }
+    }
+
+    function handleMouseUp(e) {
+      e.preventDefault();
+      selectedText = -1;
+      selectBox = -1;
+    }
+
+    function handleMouseOut(e) {
+      e.preventDefault();
+      selectedText = -1;
+      selectBox = -1
+    }
+
+    function handleMouseMove(e) {
+      if (selectBox < 0) {
+        return;
+      }
+      e.preventDefault();
+      mouseX = parseInt(e.clientX - offsetX);
+      mouseY = parseInt(e.clientY - offsetY);
+      var dx = mouseX - startX;
+      var dy = mouseY - startY;
+      startX = mouseX;
+      startY = mouseY;
+      var box = datas[selectBox]
+      box.x += dx;
+      box.y += dy;
+      draw();
+    }
+
+    // listen for mouse events
+    $("#canvas").mousedown(function (e) {
+      handleMouseDown(e);
+    });
+    $("#canvas").mousemove(function (e) {
+      handleMouseMove(e);
+    });
+    $("#canvas").mouseup(function (e) {
+      handleMouseUp(e);
+    });
+    $("#canvas").mouseout(function (e) {
+      handleMouseOut(e);
+    });
+  </script>
+</body>
+
+</html>

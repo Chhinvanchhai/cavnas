@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div style="border: 2px solid black; width: 100%; height: 100vh;">
+      <canvas id="myCanvas" style="width: 100%;"></canvas>
+    </div>
+
+    <script>
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+
+      // Set the size of each cell in the grid, including the border
+      var borderWidth = 2;
+      var cellSize = Math.floor((canvas.width - 16) / 8); // subtract 16 pixels for the border width
+      var rectHeight = 40;
+
+      // Set the height of the canvas element to ensure it fills the container element
+      canvas.height = cellSize * 8 + borderWidth * 2 + rectHeight;
+
+      // Initialize the coordinates of the fillRect
+      var fillRectX = 0;
+      var fillRectY = rectHeight;
+
+      // Draw the initial grid with the fillRect in the first cell
+      drawGrid();
+
+      // Add an event listener to the canvas to listen for clicks
+      canvas.addEventListener("click", function (event) {
+        // Get the x and y coordinates of the mouse click relative to the canvas
+        var rect = canvas.getBoundingClientRect();
+        var mouseX = event.clientX - rect.left;
+        var mouseY = event.clientY - rect.top;
+
+        // Calculate the row and column of the cell that was clicked
+        var row = Math.floor((mouseY - borderWidth - rectHeight) / (cellSize + borderWidth));
+        var col = Math.floor((mouseX - borderWidth) / (cellSize + borderWidth));
+
+        // Update the coordinates of the fillRect
+        fillRectX = col * cellSize + (col + 1) * borderWidth;
+        fillRectY = row * cellSize + (row + 1) * borderWidth + rectHeight;
+
+        // Redraw the grid with the fillRect in the new cell
+        drawGrid();
+      });
+
+      function drawGrid() {
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Loop through each row and column to draw the grid
+        for (var row = 0; row < 8; row++) {
+          for (var col = 0; col < 8; col++) {
+            // Calculate the x and y coordinates for the current cell, including the border
+            var x = col * cellSize + (col + 1) * borderWidth;
+            var y = row * cellSize + (row + 1) * borderWidth + rectHeight;
+
+            // Draw a rectangle for the current cell
+            ctx.beginPath();
+            ctx.rect(x, y, cellSize, cellSize);
+
+            // If the current cell is the one the fillRect should be in, fill it with a color
+            if (x === fillRectX && y === fillRectY) {
+              ctx.fillStyle = "red";
+              ctx.fillRect(x, y, cellSize, cellSize);
+              ctx.stroke();
+            } else {
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Loop through each column to draw the 40px rectangles
+        for (var col = 0; col < 8; col++) {
+          // Calculate the x and y coordinates for the current column's rectangle
+          var x = col * cellSize + (col + 1) * borderWidth;
+          var y = rectHeight - borderWidth;
+
+          // Draw a rectangle for the current column
+          ctx.beginPath();
+         
+          ctx.rect(x, y, cellSize, rectHeight);
+      ctx.stroke();
+    }
+  }
+</script>
+  </body>
+</html>

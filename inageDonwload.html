@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Download Image in Base64</title>
+	<script type="text/javascript">
+		function saveImage() {
+			var canvas = document.createElement("canvas");
+			canvas.width = 100;
+			canvas.height = 100;
+			var ctx = canvas.getContext("2d");
+			var img = new Image();
+			img.onload = function() {
+				ctx.drawImage(img, 0, 0);
+				var link = document.createElement("a");
+				link.download = "image.png";
+				link.href = canvas.toDataURL("image/png");
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			};
+			img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABlBMVEUAAAD/"+
+                      "//5n//8AAP+Y////Cf//AMwAAAB3RJTUUH4QHDwwx3roLDNwAAAAlwSFlzAAALEwAACxMBAJqcG"+
+                      "AAAAARnQU1BAACxjwv8YQUAAAGMSURBVHjaYvz//z8DJQAggJ5f3yVEICQECgQdSDkAAYZGtpZfY"+
+                      "3n//f4z/8a/+v8L//z8JYpAloNgB2pBmMSkAwoPgYGr3D5/vNjPwMdP/sBgwDyKFAAAq30L5ZGtp"+
+                      "cHKCgigQItAEYoqIvCwMDDP/+/w8GBhQyKMvgxyMjJCjAwM2JiZmKSmJkYGhoaGlpmYGHh5mZmJm"+
+                      "BfB/n2bXv/OBvQAMADIYnJyfQOLQAAAABJRU5ErkJggg==";
+		}
+	</script>
+</head>
+<body>
+	<button onclick="saveImage()">Save Image</button>
+</body>
+</html>
